@@ -418,8 +418,68 @@
   * **열거형 자체가 하나의 데이터 타입, 열거형의 case 하나하나 전부 하나의 유의미한 값으로 취급**
   * 선언 키워드 - enum
  
+* Class vs Struct vs Enum
 | | Class | Struct | Enum |
 |--- |------|---|---|
 | Type | Reference | Value | Value |
 | Subclassing | O | X | X |
 | Extension | O | O | O |
+
+
+* 구조체를 사용할 때
+  * 연관된 몇몇의 값들을 모아서 하나의 데이터 타입으로 표현하기 원할 때
+  * 다른 객체 또는 함수로 전달될 때 **참조가 아닌 복사**를 원할 때
+  * 자신을 상속할 필요가 없거나, 자신이 다른 타입의 상속받을 필요가 없을 때
+  * Apple 프레임워크에서 프로그래밍을 할 때 주로 클래스를 많이 사용
+ 
+ 
+* Value vs Reference
+  * Value : 데이터를 전달할 때 값을 복사하여 전달
+  * Reference : 데이터를 전달할 때 값의 메모리 위치를 전달
+
+* 코드로 비교
+```swift
+// 클래스 vs 구조체/열거형
+
+// 구조체 구현
+
+struct ValueType {
+  var property = 1
+}
+
+// 클래스 구현
+
+class ReferenceType {
+  var property = 1
+}
+
+let firstStructInstance = ValueType() // 구조체 상수 인스턴스 할당
+var secondStructInstance = firstStructInstance // 첫 번째 구조체를 두 번째 구조체에 할당
+secondStructInstance.property = 2 // 두 번째 인스턴스의 프로퍼티값 변경
+
+print("first struct instance property : \(firstStructInstance.property)") // 값 : 1
+print("second struct instance property : \(secondStructInstance.property)") // 값 : 2
+
+let firstClassReference = ReferenceType()
+var secondClassReference = firstClassReference
+secondClassReference.property = 2
+
+print("first class reference property : \(firstClassReference.property)") // 값 : 2
+print("second class reference property : \(secondClassReference.property)") // 값 : 2
+```
+
+* Swift의 데이터 타입
+```swift
+public struct Int
+public struct Double
+public sturct String
+public struct Dictionary<key : Hashable, value>
+public struct Array<Element>
+public struct Set<Element : Hashable>
+```
+
+* Swift에서는 클래스보다는 **구조체, 열거형**을 선호함
+* Apple 프레임워크는 대부분 클래스를 사용하므로, 해당 프레임워크를 사용시 구조체/클래스 선택은 사용자의 몫
+
+
+### 클로저(Closure)
