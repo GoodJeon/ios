@@ -270,3 +270,155 @@
     * 요소가 `nil`일 경우 오류
   * Force Unwrapping(강제 추출)
     * `nil` 값일 경우 강제추출할 값이 없어 런타임 에러 발생
+
+---
+
+
+## 2. 다양한 표현 및 확장
+
+### 구조체(Struct)
+* 타입을 정의, 대문자 카밀케이스 사용
+* `struct 이름 { 구현부 }`
+* 프로퍼티 : 스트럭트 안에 들어가는 인스턴스 변수라고 생각하면 될듯
+  * `var` : 가변 프로퍼티
+  * `let` : 불변 프로퍼티 
+  * `static`을 붙여주면 : 타입 프로퍼티
+* 메서드 : 구조체 안에 들어가는 함수
+  * 일반적인 구조 : 인스턴스 메서드
+  * `static`을 붙여주면 : 타입 메서드
+
+* 구조체 사용법(예시)
+  ```swift
+  // 가변 인스턴스
+  var mutable: Sample = Sample()
+  // mutable.mutableProperty = 100
+  
+  // 불변 인스턴스
+  let immutable: Sample = Sample()
+  // immutable.mutableProperty = 200
+  // immutable.immutableProperty = 200
+  
+  // 타입 프로퍼티 및 메서드
+  Sample.typeProperty = 300
+  Sample.typeMethod() // type method
+  // mutable.typeProperty = 400 
+  // 인스턴스에서 타임 프로퍼티 메서드 사용 불가
+  ```
+  
+### 클래스(Class)
+* 구조체와 매우 유사
+* 클래스는 참조타입이며, 다중 상속이 되지 않는다.
+* 정의 :  `class 이름 { 구현부 }`
+* 프로퍼티 및 메서드가 존재하며 구조체와 크게 다르지 않음
+* 다만, 타입 메서드가 두가지로 분류된다.
+  * 재정의 불가 타입 메서드 `static` 
+  ```swift
+  static func typeMathod() {
+    print("type method - static")
+  }
+  ```
+  * 재정의 가능 타입 메서드 `class`
+  ```swift
+  class func classMethod() {
+    print("type method - class")
+  }
+  ```
+
+* **클래스는 구조체와 다르게 `var, let` 상관 없이 mutable, immutable의 mutableProperty는 변경 가능함**
+* 하지만 처음부터 불변 인스턴스로 선언이 되어있다면 값을 바꿔줄 수 없음
+
+
+### 열거형(enum)
+* swift의 주요 기능 중 하나
+* 각각의 케이스가 고유의 값으로 출력
+* enum은 타입이므로 대문자 카멜케이스를 사용하여 이름을 정의
+* 형태
+  ```swift
+  enum 이름 {
+    case 이름1
+    case 이름2
+    case 이름3, 이름4, 이름5
+    }
+    
+  enum Month {
+    case jan
+    case feb
+    case mar
+    case apr, may, jun, jul
+  }
+  ```
+* 열거형 case를 나타내는 문법 : `var mon: Month = Month.jan` , `mon = .feb`
+* switch에서도 자주 사용
+  ```swift
+  switch mon {
+  case .jan, .feb, .mar:
+    print("1분기 입니다.")
+  case Month.apr:
+    print("4월이 왔어요.")
+  case .may, .jun:
+    print("더워지기 시작해요..")
+  ```
+
+* 열거형을 C언어의 enum처럼 정수값을 가지게 하고 싶으면 **원시값(rawValue)**를 사용하면된다.**
+  ```swift
+  enum Fruit: Int {
+    case apple = 0
+    case orange = 1
+    case banana
+  }
+  
+  // 값을 꺼내오고 싶다면 다음과 같은 형태로
+  
+  print("\(Fruit.apple.rawvalue)")
+  ```
+* 정수 타입 뿐만이 아니라, **Hashable 프로토콜**을 따르는 모든 타입이 원시값의 타입으로 지정될 수 있다.
+* 문자열 타입 같은 경우는 원시값을 지정해주지 않으면 케이스의 이름 그대로가 원시값
+
+* 원시값을 통한 초기화
+  * rawValue를 통해 초기화 할수 있다.
+  * rawValue가 case에 해당하지 않을 수 있으므로, 초기화한 인스턴스는 옵셔널 타입이다.
+  ```swift
+  let apple: Fruit? = Fruit(rawValue: 0)
+  
+  if let peach: Fruit = Fruit(rawValue: 4) {
+   print("rawValue 4에 해당하는 케이스는 \(peach)입니다")
+  } else {
+     print("rawValue 4에 해당하는 케이스가 없습니다")
+  }
+  ```
+* 열거형에는 메서드도 추가해 줄 수 있다.
+
+
+
+### 값 타입(Value Type) / 참조 타입(Reference Type)
+* Class
+  * 전통적인 OOP 관점에서의 클래스
+  * 단일 상속
+  * (인스턴스/타입) 메서드
+  * (인스턴스/타입) 프로퍼티
+  * **참조타입**
+  * Apple 프레임워크의 대부분의 큰 뼈대는 모두 클래스로 구성
+
+* Struct
+  * C언어 등의 구조체보다 다양한 기능
+  * 상속 불가
+  * (인스턴스/타입) 메서드
+  * (인스턴스/타입) 프로퍼티
+  * **값 타입**
+  * Swift의 대부분의 큰 뼈대는 모두 구조체로 구성
+
+* Enum
+  * 다른 언어의 열거형과는 많이 다른 존재
+  * 상속 불가
+  * (인스턴스/타입) 메서드
+  * (인스턴스/타입) 연산 프로퍼티
+  * **값 타입**
+  * Enumeration
+  * 유사한 종류의 여러 값을 유의미한 이름으로 한 곳에 모아 정의(ex: 요일, 상태값, 월 등)
+  * **열거형 자체가 하나의 데이터 타입, 열거형의 case 하나하나 전부 하나의 유의미한 값으로 취급**
+  * 선언 키워드 - enum
+ 
+| | Class | Struct | Enum |
+| Type | Reference | Value | Value |
+| Subclassing | O | X | X |
+| Extension | O | O | O |
