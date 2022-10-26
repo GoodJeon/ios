@@ -483,3 +483,103 @@ public struct Set<Element : Hashable>
 
 
 ### 클로저(Closure)
+* 코드의 블럭
+* **일급 시민(first-citizen)** 으로 변수, 상수 등으로 저장 가능하며 전달인자로도 전달이 가능하다.
+* 함수 : 이름이 있는 클로저
+
+* 정의
+```swift
+{ (매개변수 목록) -> 반환타입 in
+  실행 코드
+}
+
+// 함수를 사용한다면
+func sumFunction(a: Int, b: Int) -> Int {
+  return a + b
+}
+
+var sumResult: Int = sumFunction(a: 1, b: 2)
+print(sumResult) // 값 : 3
+
+// 클로저의 사용
+var sum: (Int, Int) -> Int = { (a: Int, b: Int) - > Int in
+  return a + b
+}
+sumResult = sum(1,2)
+print(sumResult) // 값 : 3
+
+// 함수는 클로저의 일종으로 sum 변수에는 당연히 함수도 할당 가능
+sum = sumFunction(a:b:)
+
+sumResult= sum(1,2,)
+print(sumResult) // 값 : 3
+```
+
+* 클로저는 함수의 전달인자로 주로 사용
+```swift
+let add: (Int, Int) -> Int
+add = { (a: Int, b: Int) -> Int in
+  return a + b
+}
+
+let substract: (Int, Int) -> Int
+substract = { (a: Int, b: Int) -> Int in
+  return a - b
+}
+
+let divide: (Int, Int) -> Int
+divide = { (a: Int, b: Int) -> Int in 
+  return a / b
+}
+
+func calculate(a: Int, b: Int, method: (Int, Int) -> Int) -> Int {
+  return method(a, b)
+}
+
+var calculated: Int
+
+calculated = calculate(a: 50, b: 10, method: add)
+
+print(calculated) // 값 : 60
+
+calculated = calculate(a: 50, b: 10, method: substract)
+
+print(calculated) // 값 : 40
+
+calculated = calculate(a: 50, b: 10, method: divide)
+
+print(calculated) // 값 :  5
+
+```
+
+* 클로저의 규칙
+  1. 후행 클로저 : 함수의 매개변수 마지막으로 전달되는 클로저는 후행 클로저(trailing closure)로 함수 밖에 구현할 수 있습니다.
+  ```swift
+  result = calculate(a: 10, b: 10) { (left: Int, right: Int) -> Int in 
+    return left + right
+  }
+  ```
+  2. 반환타입 생략 : 컴파일러가 클로저의 타입을 유추할 수 있는 경우 매개변수, 반환 타입을 생략할 수 있습니다.
+  ```swift
+  result = calculate(a: 10, b: 10, method: { (left: Int, right: Int) in
+    return left + right
+  })
+  
+  print(result) // 20
+  ```
+  3. 단축 인자 이름 : 전달인자의 이름 굳이 필요없고, 컴파일러가 타입을 유추할 수 있는 경우 축약된 전달인자 이름($0, $1, $2)를 사용할 수 있습니다.
+  ```swift
+  result = calculate(a: 10, b: 10, method: {
+    return $0 + $1
+  })
+  ```
+  4. 암시적 반환 표현 : 반환 값이 있는 경우, 암시적으로 클로저의 맨 마지막 줄은 return 키워드를 생략하더라도 반환 값으로 취급합니다.
+  ```swift
+  result = calculate(a: 10, b:10) {
+    $0 + $1
+    
+    
+  // 조금 더 간단하게 한줄로
+  result = calculate(a: 10, b: 10) { $0 + $1}
+  
+  ```
