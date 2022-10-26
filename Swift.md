@@ -419,8 +419,9 @@
   * 선언 키워드 - enum
  
 * Class vs Struct vs Enum
+
 | | Class | Struct | Enum |
-|--- |------|---|---|
+|---|------|---|---|
 | Type | Reference | Value | Value |
 | Subclassing | O | X | X |
 | Extension | O | O | O |
@@ -582,4 +583,253 @@ print(calculated) // 값 :  5
   // 조금 더 간단하게 한줄로
   result = calculate(a: 10, b: 10) { $0 + $1}
   
+  // 축약 전후의 클로저 문법의 비교
+  result = calculate(a: 10, b: 10, method: { (left: Int, right: Int) -> Int in
+    return left + right
+  })
+  
+  result = calculate(a: 10, b: 10) { $0 + $1 }
+  
+  print(result) // 값 : 20
+
   ```
+  
+  
+  
+### 프로퍼티(Property)
+* 타입과 연관된 값들을 표현할 때 사용
+* 프로퍼티는 구조체, 클래스, 열거형 내부에 구현할 수 있다.
+* 다만, 열거형 내부에는 연산 프로퍼티만 구현할 수 있다. **연산프로퍼티는 `var`로만 선언할 수 있다.**
+* 종류
+  * 저장 프로퍼티(stored property)
+  * 연산 프로퍼티(computed property)
+  * 인스턴스 프로퍼티(instance property)
+  * 타입 프로퍼티(type property) 
+
+* 정의
+```swift
+struct Student {
+
+  // 인스턴스 저장 프로퍼티
+  var name: String = ""
+  var 'class': String = "Swift"
+  var koreanAge: Int = 0
+  
+  // 인스턴스 연산 프로퍼티
+  var westernAge: Int {
+    get {
+        return koreanAge - 1
+    }
+    
+    set(inputValue) {
+        koreanAge = inputValue + 1
+    }
+    
+    
+    // 타입 저장 프로퍼티
+static var typeDescription: String = "학생"
+
+
+// 인스턴스 메서드
+func selfIntroduce() {
+  print("저는 \(self.class)반 \(name)입니다")
+}
+
+// 읽기전용 인스턴스 연산 프로퍼티
+var selfIntroduction: String {
+  get {
+      return "저는 \(self.class)반 \(name)입니다"
+  }
+}
+
+ /*
+ // 타입 메서드 
+ static func selfIntroduce() {
+ print("학생타입입니다")
+ */
+
+ // 읽기전용 타입 연산 프로퍼티
+ // 읽기전용에서는 get을 생략할 수 있습니다
+ static var selfIntroduction: String {
+   return "학생타입입니다"
+ }
+}
+```
+
+* 사용
+```swift
+// 타입 연산 프로퍼티 사용
+print(Student.selfIntroduction)
+// 학생타입입니다.
+
+// 인스턴스 생성
+var goodjeon: Student = Student()
+goodjeon.koreanAge = 28
+
+// 인스턴스 저장 프로퍼티 사용
+goodjeon.name = "dongjun"
+print(goodjeon.name)
+// dongjun
+
+// 인스턴스 연산 프로퍼티 사용
+print(goodjeon.selfIntroduction)
+// 저는 Swift반 goodjeon입니다
+
+print("제 한국나이는 \(goodjeon.koreanAge)살이고, 미국나이는 \(goodjeon.westernAge)살입니다.")
+// 제 한국나이는 28살이고, 미국나이는 27살입니다.
+```
+
+* 응용
+```swift
+struct Money {
+  var currencyRate: Double = 1100
+  var dollar: Double = 0
+  var won: Double {
+    get {
+        return dollar * currencyRate
+    }
+    set {
+        dollar = newValue / currencyRate
+    }
+    // set 블럭에서 암시적 매개변수 newValue를 사용할 수 있음
+  }
+}
+
+var moneyInMyPocket = Money()
+moneyInMyPocket.won = 11000
+print(moneyInMyPocket.won)
+// 11000
+
+moneyInMyPocket.dollar = 10
+print(moneyInMyPocket.won)
+// 11000  
+```
+
+* 지역변수와 전역변수
+  * 저장 프로퍼티와 연산 프로퍼티의 기능은 함수, 메서드, 클로저, 타입 등의 외부에 위치한 지역/전역 변수에도 모두 사용 가능
+  ```swift
+  var a: Int = 100
+  var b: Int = 200
+  var sum: Int {
+      return a + b
+  }
+   
+  print(sym) // 300
+  ```
+  
+### 프로퍼티 감시자(Property Observer)
+* 프로퍼티 감시자를 사용하면 프로퍼티 값이 변경될 때 원하는 동작을 수행하도록 도와주는 역할
+* `willSet`과 `didSet`활용
+  *  `willSet` : 값이 변경되기 직전에 호출, 암시적 매개변수 이름 `newValue`
+  *  `didSet` : 값이 변경된 직후에 호출, 암시적 매개변수 이름 `oldValue`
+* 함수, 메서드, 클로저, 타입 등 외부에 위치한 지역/전역 변수에도 모두 사용 가능
+* 연산 프로퍼티에는 사용 불가
+
+### 상속(Inheritance)
+* 스위프트의 상속은 클래스, 프로토콜 등에서 가능하다.
+* 열거형(enum), 구조체(struct)에는 상속이 불가능하다.
+* 스위프트의 클래스는 단일상속으로, 다중상속을 지원하지 않는다.
+* 구현 정의
+```swift
+class 이름: 상속받을 클래스명 {
+  /* 구현부 */
+}
+```
+
+* `final` 키워드를 사용하면 재정의(override)를 방지할 수 있다.
+* `static` 키워드를 사용해 타입 메서드를 만들면 재정의가 불가하다.
+* `class` 키워드를 사용해 타입 메서드를 만들면 재정의가 가능하다.
+* `class` 앞에 `final`을 붙이면 `static` 키워드를 사용한 것과 동일하게 동작한다.
+* `override` 키워드를 사용해 부모 클래스의 메서드를 재정의 할 수 있다.
+
+
+* 예시
+```swift
+class Person {
+    var name: String = ""
+    
+    func selfIntroduce() {
+        print("저는 \(name)입니다")
+    }
+    
+    // final 키워드를 사용하여 재정의를 방지할 수 있다.
+    final func sayHello() {
+        print("Hello")
+    }
+    
+    // 타입 메서드
+    // 재정의 불가 타입 메서드 - static
+    static func typeMethod() {
+        print("type method - static")
+    }
+    
+    // 재정의 가능 타입 메서드 - class
+    class func classMethod() {
+        print("type method - class")
+    }
+    
+    // 재정의 가능한 class 메서드라도
+    // final 키워드를 사용하면 재정의 할 수 없다
+    // 메서드 앞의 'static'과 'final class'는 똑같은 역할
+    final class func finalClassMethod() {
+        print("type method - fianl class")
+    }
+} 
+
+class Student: Person {
+    var major: String = ""
+    
+    // 부모 클래스에서 정의한 함수를 새롭게 동작하게 하기위해 'override' 사용
+    override func selfIntroduce() {
+       print("저는 \(name)이고, 전공은 \(major)입니다")
+    }
+    
+    override class func classMethod() {
+        print("overriden type method - class")
+    }
+    
+    // static을 사용한 타입 메서드는 재정의 X
+    override static func typeMethod() {   }
+    
+    // final 키워드를 사용한 메서드, 프로퍼티는 재정의 X
+    // override func sayHello() { }
+    // override class func finalClassMethod() {  }
+}
+
+let goodjeon: Person = Person()
+let dongjun: Student = Student()
+
+goodjeon.name = "goodjeon"
+dongjun.name = "dongjun"
+
+// dongjun은 Student클래스로 major를 추가해서 major를 지정해줄 수 있다.
+dongjun.major = "Swift"
+
+goodjeon.selfIntroduce()
+// 저는 goodjeon입니다
+
+dongjun.selfIntroduce()
+// 저는 dongjun이고 전공은 Swift입니다
+
+Person.classMethod()
+// type method - class
+
+Person.typeMethod()
+// type method - static
+
+Person.finalClassMethod()
+// type method - final class 
+
+Student.classMethod()
+// overriden type method - class
+
+Student.typeMethod()
+// type method - static
+
+Student.finalClassMethod()
+// type method - final class
+
+  
+       
+
+```
