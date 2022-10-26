@@ -419,6 +419,7 @@
   * 선언 키워드 - enum
  
 | | Class | Struct | Enum |
+|--- |------|---|---|
 | Type | Reference | Value | Value |
 | Subclassing | O | X | X |
 | Extension | O | O | O |
