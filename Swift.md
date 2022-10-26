@@ -828,8 +828,136 @@ Student.typeMethod()
 
 Student.finalClassMethod()
 // type method - final class
-
-  
-       
-
 ```
+
+
+### 인스턴스의 생성과 소멸(init / deinit)
+* 스위프트의 모든 인스턴스는 초기화와 동시에 **모든 프로퍼티**에 유효한 값이 할당되어 있어야 한다.
+* 프로퍼티에 미리 기본값을 할당해두면 인스턴스가 생성됨과 동시에 초기값을 지니게 된다.
+```swift
+class PersonA {
+    // 모든 저장 프로퍼티에 기본값 할당
+    var name: String = "unknown"
+    var age: Int = 0
+    var nickName: String = "nick"
+}
+
+// 인스턴스 생성
+let jason: PersonA = PersonA()
+
+// 기본값이 인스턴스가 지녀야 할 값과 맞지 않다면
+// 생성된 인스턴스의 프로퍼티에 각각 값 할당
+jason.name = "jason"
+jason.age = 30
+jason.nickName = "j"
+```
+* 인스턴스 생성 : 이니셜라이저(init)
+    * 프로퍼티 초기값을 지정하기 어려운 경우에는 이니셜라이저를 통해 인스턴스가 가져야 할 초기값을 전달
+    ```swift
+    class PersonB {
+    var name: String
+    var age: Int
+    var nickName: String
+    
+      // 이니셜라이저
+      init(name: String, age: Int, nickName: String) {
+          self.name = name
+          self.age = age
+          self.nickName = nickName
+      }
+    }
+
+    let hana: PersonB = PersonB(name: "dongjun", age: 20, nickName: "동준")
+    ```
+    * 프로퍼티의 초기값이 꼭 필요하지 않다면 **Optional**을 사용
+    * Class 내부의 init을 사용할 때는 `convenience` 키워드 사용
+    ```swift
+    class PersonC {
+        var name: String
+        var age: Int
+        var nickName: String?
+    
+        init(name: String, age: Int, nickName: String) {
+            self.name = name
+            self.age = age
+            self.nickName = nickName
+        }
+
+      // 위와 동일한 기능 수행
+      // convenience init(name: String, age: Int, nickName: String) {
+      //       init(name: name, age: age)
+      //       self.nickName = nickName
+      //  }
+
+        init(name: String, age: Int) {
+            self.name = name
+            self.age = age
+        }
+    }
+
+    let jenny: PersonC = PersonC(name: "jenny", age: 10)
+    let mike: PersonC = PersonC(name: "mike", age: 15, nickName: "m")
+    ```
+    * 암시적 추출 옵셔널은 인스턴스 사용에 꼭 필요하면서 초기값을 할당하고 싶지 않을 때 사용
+    ```swift
+    class Phone{
+      var name: String
+      var owner: PersonC!
+      
+      init(name:String) {
+        self.name = name
+      }
+      
+      func callOwner() {
+        print("\(name)폰의 주인 \(owner.name)님은 자리로 와주세요")
+      }
+    }
+    
+    let iPhone11: Phone = Phone(name: "iPhone11")
+    // 핸드폰은 주인이 수리를 맡겨서 주인이 없으면 안된다.
+    iPhone11.owner = goodjeon
+    iPhone11.callOwner()
+    // iPhone11폰의 주인 goodjeon님은 자리로 와주세요
+    ```
+    * 실패 가능한 이니셜라이저
+      * 이니셜라이저 매개변수로 전달되는 초기값이 잘못된 경우에는 인스턴스의 생성을 실패할 수도 있다.
+      * 인스턴스 생성에 실패하면 `nil`을 반환
+      * 실패 가능한 이니셜라이저의 반환타입은 옵셔널 타입
+      * `init?`을 사용
+      ```swift
+      class PersonD {
+        var name: String
+        var age: Int
+        var nickName: String?
+
+        init?(name: String, age: Int) {
+            if (0...120).contains(age) == false {
+                return nil
+            }
+
+            if name.characters.count == 0 {
+                return nil
+            }
+
+            self.name = name
+            self.age = age
+          }
+      }
+
+      //let john: PersonD = PersonD(name: "john", age: 23)
+      let john: PersonD? = PersonD(name: "john", age: 23)
+      let joker: PersonD? = PersonD(name: "joker", age: 123)
+      let batman: PersonD? = PersonD(name: "", age: 10)
+
+      print(joker) // nil
+      print(batman) // nil
+      ```
+    
+* 인스턴스 소멸 : 디이니셜라이저(deinit)
+  * 클래스의 인스턴스가 메모리에서 해제되는 시점에 호출하며 그 때 해야할 일을 구현
+  * 메모리에서 해제 시점은 **ARC(Automatic Reference Counting)** 규칙에 따라 결정
+  * 참고 : [ARC문서](https://docs.swift.org/swift-book/LanguageGuide/AutomaticReferenceCounting.html)
+  * 매개변수를 지닐 수 없음
+  * 자동 호출로 직접 호출 불가
+  * **클래스 타입**에만 구현 가능
+  
