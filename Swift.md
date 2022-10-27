@@ -961,3 +961,339 @@ jason.nickName = "j"
   * 자동 호출로 직접 호출 불가
   * **클래스 타입**에만 구현 가능
   
+
+### 옵셔널 체이닝 & nil 병합
+* 옵셔널 체이닝
+  * 옵셔널 내부의 내부의 내부로 옵셔널이 연결되어 있을 때 유용하게 활용 가능
+  * 매번 nil확인을 하지 않고 최종적으로 원하는 값이 있는지 없는지 확인 가능
+  ```swift
+  class Person {
+    var name: String
+    var job: String?
+    var home: Apartment?
+    
+    init(name: String) {
+      self.name = name
+    }
+  }
+  
+  class Apartment {
+    var buildingNumber: String
+    var roomNumber: String
+    var 'guard': Person?
+    var owner: Person?
+    
+    init(dong: String, ho: String) {
+      buildingNumber = dong
+      roomNumber = ho
+    }
+  }
+  
+  let goodjeon: Person? = Person(name: "goodjeon")
+  let apart: Apartment? = Apartment(dong: "101", ho: "202")
+  let superman: Person? = Person(name: "superman")
+  
+  // 옵셔널 체이닝 실행 후 결과값이 nil일 수도 있어 결과 타입도 옵셔널
+  
+  // 만약 경비원의 직업이 궁금할 경우
+  
+  // 옵셔널 체이닝을 사용하지 않을 때
+  func guardJob(Owner: Person?) {
+    if let owner = owner {
+      if let home = owner.home {
+        if let 'guard' = home.guard {
+          if let guardJob = 'guard'.job {
+            print("우리집 경비원의 직업은 \(guardJob)입니다")
+          } else {
+            print("우리집 경비원은 직업이 없어요")
+          }
+        }
+      }
+    }
+  }
+  
+  guardJob(owner: goodjeon)
+  
+  
+  // 옵셔널 체이닝을 사용할 때
+  func guardJobWithOptionalChaining(owner: Person?) {
+    if let guardJob = owner?.home?.guard?.job {
+      print("우리집 경비원의 직업은 \(guardJob)입니다")
+    } else {
+      print("우리집 경비원은 직업이 없어요")
+    }
+  }
+  
+  guardJobWithOptionalChaining(owner: goodjeon)
+  // 우리집 경비원은 직없이 없어요
+  
+  goodjeon?.home?.guard?.job // nil
+  
+  goodjeon?.home = apart
+  
+  goodjeon?.home?guard // nil
+  
+  goodjeon?.home?.guard = superman
+  
+  goodjeon?.home?.guard // Optional(Person)
+  
+  goodjeon?.home?.guard?.name // superman
+  
+  goodjeon?.home?.guard?.job // nil
+  
+  goodjeon?.home?.guard?.job = "경비원"
+  ```
+* nil 병합 연산자
+  * 중위 연산자 `??` 사용 : `Optional ?? value`
+  * 옵셔널 값이 `nil`일 경우, 우측의 값을 반환
+  * **띄어쓰기에 주의**
+  ```swift
+  var guardJob: String
+  
+  // 이미 job에 경비원이 들어가 있기 때문에 경비원으로 출력된다.
+  guardJob = goodjeon?.home?.guard?.job ?? "슈퍼맨"
+  print(guardJob) // 경비원
+  
+  // 그래서 job을 nil로 비워주게 만들면?
+  goodjeon?.home?.guard?.job = nil
+  
+  // nil 병합 연산자로 인해 슈퍼맨으로 값이 들어가게 된다.
+  guardJob = goodjeon?.home?.guard?.job ?? "슈퍼맨"
+  print(guardJob) // 슈퍼맨
+  ```
+  
+
+### 타입 캐스팅
+* **인스턴스의 타입을 확인하는 용도**
+* 클래스의 인스턴스를 **부모 혹은 자식 클래스의 타입으로 사용할 수 있는지 확인 하는 용도**
+* **is, as**를 사용
+* 형 변환은 'ex. let someDouble = Double(2)' 타입 캐스팅이 아니라 새로운 값을 생성하는 것
+* 예제
+```swift
+// 타입 캐스킹을 위한 클래스 정의
+class Person {
+  var name: String = ""
+  func breath() {
+    print("숨을 쉽니다")
+  }
+}
+
+class Studnet: Person {
+  var school: String = ""
+  func goToSchool() {
+    print("등교를 합니다")
+  }
+}
+
+class UniversityStudent: Student {
+  var major: String = ""
+  func goToMT() {
+    print("맴버쉽 트레이닝을 갑니다")
+  }
+}
+
+var goodjeon: Person = Person()
+var dongjun: Student = Student()
+var son: UniversityStudent = UniversityStudent()
+
+// is를 사용해서 타입을 확인할 수 있다.
+var result: Bool
+
+result = goodjeon is Person // true
+result = goodjeon is Student // false
+result = goodjeon is UniversityStudent // false
+
+result = dongjun is Person // true
+result = dongjun is Student // true
+result = dongjun is UniversityStudent // false
+
+result = son is Person // true
+result = son is Student // true
+result = son is UniversityStudent // true
+
+
+// if-else 구문 활용
+if goodjeon is UniversityStudent {
+  print("goodjeon은 대학생입니다")
+} else if goodjeon is Student {
+  print("goodjeon은 학생입니다")
+} else if goodjeon is Person {
+  print("goodjeon은 사람입니다")
+} // goodjeon은 사람입니다
+
+// switch 구문에서 마지막 case까지 갈 경우
+switch son {
+case is Person:
+  print("son은 사람입니다")
+case is Student:
+  print("son은 학생입니다")
+case is UniversityStudent:
+  print("son은 대학생입니다")
+default:
+  print("son은 사람도, 학생도, 대학생도 아닙니다")
+} // son은 사람입니다
+
+
+// switch 구문에서 첫 case에 걸릴 경우
+switch son {
+case is UniversityStudent:
+  print("son은 대학생입니다")
+case is Student:
+  print("son은 학생입니다")
+case is Person:
+  print("son은 사람입니다")
+} // son은 대학생입니다
+```
+
+* 업 캐스팅(Up Casting)
+  * `as`를 사용하여 **부모클래스의 인스턴스**로 사용할 수 있도록 컴파일러에게 타입정보를 전환해준다.
+  * `Any` 혹은 `AnyObject`로도 타입정보 변환 가능
+  * 암시적으로 처리되므로 꼭 필요한 경우가 아니라면 생략해도 무방
+  ```swift
+  var mike: Person = UniversityStudent() as Person
+  var jenny: Student = Student()
+  var jina: Any = Person() // as Any 생략 가능
+  ```
+
+* 다운 캐스팅(Down Casting)
+  * `as?` 또는 `as!`를 사용하여 **자식클래스의 인스턴스**로 사용할 수 있도록 컴파일러에게 타입정보를 전환해준다.
+  * 조건부 다운 캐스팅
+    * `as?` 사용
+    * 캐스팅 실패 시, 즉 캐스팅하려는 타입에 부합하지 않는 인스턴스라면 `nil`을 반환하기에 결과의 타입은 옵셔널 타입
+    ```swift
+    var optionalCasted: Student?
+    
+    optionalCasted = mike as? UniversityStudent
+    optionalCasted = jenny as? UniversityStudent // nil
+    optionalCasted = jina as? UniversityStudent // nil
+    optionalCasted = jina as? Student // nil
+    ```
+  * 강제 다운 캐스팅
+    * `as!` 사용
+    * 캐스팅 실패 시, 즉 캐스팅하려는 타입에 부합하지 않는 인스턴스라면 **런타임 오류** 발생
+    * 캐스팅 성공 시 옵셔널이 아닌 일반 타입 반환
+    ```swift
+    var forcedCasted: Student
+    
+    forcedCasted = mike as! UniversityStudent
+    // forcedCasted = jenny as! UniversityStudent // 런타임 오류
+    // forcedCasted = jina as! UniversityStudent // 런타임 오류
+    // forcedCasted = jina as! Student // 런타임 오류
+    ```
+ * 활용
+ ```swift
+ func doSomethingWithSwitch(someone: Person) {
+   switch someone {
+   case is UniversityStudent:
+     (someone as! UniversityStudent).goToMT()
+   case is Student:
+     (someone as! Student).goToSchool()
+   case is Person:
+     (someone as! Person).breath()
+   }
+ }
+ 
+ doSomethingWithSwitch(someone: mike as Person) // 멤버쉽 트레이닝을 갑니다
+ doSomethingWithSwitch(someone: mike) // 멤버쉽 트레이닝을 갑니다
+ doSomethingWithSwitch(someone: jenny) // 등교를 합니다
+ doSomethingWithSwitch(someone: goodjeon) // 숨을 쉽니다
+ ```
+ 
+ ### assert / guard
+ * 애플리케이션의 동작 도중에 생성하는 다양한 결과값을 동적으로 확인하고 안전하게 처리할 수 있도록 확인 및 빠른 처리를 도와줌
+ * Assertion
+   * `assert(_:_:file:line:)` 함수를 사용
+   * `assert` 함수는 **디버깅 모드에서만 작동**
+   * 배포하는 애플리케이션에서는 제외
+   * 예상했던 **조건의 검증**을 위해 사용
+   ```swift
+   var someInt: Int = 0
+   
+   // 검증 조건과 실패시 나타날 문구 작성
+   // 검증 조건에 부합해 pass
+   assert(someInt == 0, "someInt != 0")
+   
+   someInt = 1
+   // assert(someInt == 0) // 동작 중지, 검증 실패
+   // assert(someInt == 0, "someInt != 0") // 동작 중지, 검증 실패
+   // assertion failed: someInt != 0: file guard_assert.swift, line 26
+   
+   func functionWithAssert(age: Int?) {
+     assert(age != nil, "age == nil")
+     
+     assert((age! >= 0) && (age! <= 130), "나이값 입력이 잘못되었습니다")
+     print("당신의 나이는 \(age!)세입니다")
+   }
+   
+   functionWithAssert(age: 50)
+   //functionWithAssert(age: -1) // 동작 중지, 검증 실패
+   //functionWithAssert(age: nil) // 동작 중지, 검증 실패
+   ```
+   * `assert(_:_:file:line:)`과 같은 역할을 하지만 실제 배포 환경에서도 동작하는 `precondition(_:_:file:line:)` 함수도 있음
+
+* guard(빠른 종료 - Early Exit)
+  * `guard` 사용하여 잘못된 값의 전달 시 특정 실행 구문을 빠르게 종료
+  * 디버깅 모드 뿐 아니라 어떤 조건에서도 동작
+  * `guard`의 `else` 블럭 내부에는 특정 **코드블럭을 종료하는 지시어(return, break 등)가 꼭 있어야 함**
+  * 타입캐스팅, 옵셔널과도 자주 사용
+  * 그 외에도 단순 조건 판단 후 빠르게 종료할 때도 용이
+  ```swift
+  func functionWithGuard(age: Int?) {
+    
+    // age가 nil이라면 바로 return으로 감   
+    guard let unwrappedAge = age,
+      unwrappedAge < 130,
+      unwrappedAge >= 0 else {
+      print("나이값 입력이 잘못되었습니다")
+      return
+    }
+    
+    print("당신의 나이는 \(unwrappedAge)세입니다")
+  }
+  
+  var count = 1
+  
+  while true {
+    guard count < 3 else {
+      break
+    }
+    print(count)
+    count += 1
+  }
+  
+  // 1
+  // 2
+  
+  func someFunction(info: [String: Any]) {
+    guard let name = info["name"] as? String else {
+      return
+    }
+    
+    guard let age = info["age"] as? Int, age >= 0 else {
+      return
+    }
+    
+    print("\(name): \(age)")
+  }
+  
+  someFunction(info: ["name": "jenny", "age": "10"])
+  someFunction(info: ["name:: "mike"])
+  someFunction(info: ["name": "goodjeon", "age": 10]) // goodjeon: 10
+  ```
+
+* if let / guard 를 이용한 옵셔널 바인딩 비교
+```swift
+// 1. if let 옵셔널 바인딩
+if let unwrapped: Int = someValue {
+  unwrapped = 3
+}
+// if 구문 외부에서는 unwrapped 사용이 불가능
+// unwrapped = 5
+
+// 2. guard 옵셔널 바인딩
+// guard 구문 이후에도 unwrapped 사용 가능
+guard let unwrapped: Int = someValue else {
+  return
+}
+unwrapped = 3
+```
