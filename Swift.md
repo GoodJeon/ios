@@ -1597,6 +1597,13 @@ protocol 프로토콜명 {
 * 오류표현
   * **Error** 프로토콜과 (주로)**열거형**을 통해서 오류를 표현
   ```swift
+  enum 오류종류이름: Error {
+    case 종류1
+    case 종류2
+    case 종류3
+    //...
+  }
+  
   enum VendingMachineError: Error {
     case invalidInput
     case insufficientFunds(moneyNeeded: Int)
