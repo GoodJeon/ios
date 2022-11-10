@@ -428,3 +428,67 @@ print(동물.isSuperset(of: 새)) // 동물은 새의 전체집합? true
 var string: String = "string"
 string.shuffled()
 string.randomElement()
+
+
+
+
+
+// 열거형(Enum)
+
+enum School {
+    case primary // 유치원
+    case elementary // 초등
+    case middle // 중등
+    case high // 고등
+    case college // 대학
+    case university // 대학교
+    case graduate // 대학원
+}
+
+
+var highestEducationalLevel : School = School.university // : School =. university 도 같은 표현
+
+highestEducationalLevel = .graduate  // 같은 타입 내의 항목으로 변경 가능
+
+// 원시값(Raw Value)
+// 특정 타입의 값을 가질 수 있고, rawValue 라는 프로퍼티를 통해 원시값을 사용할 수도 있다.
+
+enum SSchool: String {
+    case primary = "유치원"
+    case elementary = "초등학교"
+    case middle = "중학교"
+    case high = "고등학교"
+    case college = "대학"
+    case university = "대학교"
+    case graduate = "대학원"
+}
+
+let highestLevel: SSchool = SSchool.university
+
+print("제 최종 학력은 \(highestLevel)입니다.")
+
+
+enum WeekDays: Character {
+    case mon = "월", tue = "화", wed = "수", thu = "목", fri = "금", sat = "토", sun = "일"
+}
+
+let today: WeekDays = WeekDays.tue
+print("today is \(today.rawValue)요일")
+
+
+enum Numbers: Int {
+    case zero
+    case one
+    case two
+    case test
+    case ten = 10
+}
+
+print("\(Numbers.zero.rawValue), \(Numbers.two.rawValue), \(Numbers.test.rawValue), \(Numbers.ten.rawValue)")
+
+
+let primary = SSchool(rawValue: "유치원")
+let graduate = SSchool(rawValue: "석박사")
+let one = Numbers(rawValue: 1)
+let four = Numbers(rawValue: 4)
+

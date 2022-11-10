@@ -13,17 +13,17 @@ import AVFoundation
 
 class ViewController: UIViewController, AVAudioPlayerDelegate {
     
-    // Properties
+    // MARK: - Properties
     var player: AVAudioPlayer!
     var timer: Timer!
     
-    // IBOutlet
+    // MARK: IBOutlet
     @IBOutlet var playPauseButton: UIButton!
     @IBOutlet var timeLabel: UILabel!
     @IBOutlet var progressSlider: UISlider!
     
-    // Methods
-    // Cusmtom Method
+    // MARK: - Methods
+    // MARK: Cusmtom Method
     func initializedPlayer() {
         
         guard let soundAsset: NSDataAsset = NSDataAsset(name: "sound") else {
