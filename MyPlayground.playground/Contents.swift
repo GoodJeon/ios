@@ -492,3 +492,30 @@ let graduate = SSchool(rawValue: "석박사")
 let one = Numbers(rawValue: 1)
 let four = Numbers(rawValue: 4)
 
+
+
+
+
+
+func greet() {
+    for i in 1...4 {
+        print("hello")
+    }
+}
+
+greet()
+
+
+func greeting1() {
+    print("Hello")
+    
+    func greeting2() {
+        print("Hey")
+    }
+    
+    greeting2()
+}
+
+
+
+greeting1()
